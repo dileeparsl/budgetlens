@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
 
 from app.auth import get_current_user_id
-from app.database import get_supabase
+from app.database import get_supabase_for_user
 from app.models.category import CategoryCreate, CategoryOut, CategoryUpdate
 
 router = APIRouter(prefix="/api/categories", tags=["categories"])
@@ -39,7 +39,7 @@ def _seed_defaults(user_id: str, db: Client) -> List[dict]:
 @router.get("", response_model=List[CategoryOut])
 def list_categories(
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     res = db.table(TABLE).select("*").eq("user_id", user_id).order("created_at").execute()
     if not res.data:
@@ -51,7 +51,7 @@ def list_categories(
 def create_category(
     body: CategoryCreate,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     row = {"user_id": user_id, **body.model_dump(exclude_none=True)}
     res = db.table(TABLE).insert(row).execute()
@@ -64,7 +64,7 @@ def create_category(
 def get_category(
     category_id: str,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     res = db.table(TABLE).select("*").eq("id", category_id).eq("user_id", user_id).execute()
     if not res.data:
@@ -77,7 +77,7 @@ def update_category(
     category_id: str,
     body: CategoryUpdate,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     updates = body.model_dump(exclude_none=True)
     if not updates:
@@ -98,7 +98,7 @@ def update_category(
 def delete_category(
     category_id: str,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     res = (
         db.table(TABLE)

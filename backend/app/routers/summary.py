@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from supabase import Client
 
 from app.auth import get_current_user_id
-from app.database import get_supabase
+from app.database import get_supabase_for_user
 
 router = APIRouter(prefix="/api/summary", tags=["summary"])
 
@@ -62,7 +62,7 @@ def _month_range(year: int, month: int) -> Tuple[str, str]:
 @router.get("/monthly", response_model=MonthlySummary)
 def monthly_summary(
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
     year: int = Query(default_factory=lambda: date.today().year),
     month: int = Query(default_factory=lambda: date.today().month, ge=1, le=12),
 ):
@@ -119,7 +119,7 @@ def monthly_summary(
 @router.get("/dashboard", response_model=DashboardData)
 def dashboard_data(
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
     months: int = Query(6, ge=1, le=24),
 ):
     today = date.today()

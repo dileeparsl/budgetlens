@@ -1,38 +1,32 @@
-"""JWT authentication dependency for Supabase-issued tokens."""
-
-from typing import Optional
+"""JWT authentication dependency — verifies Supabase tokens via the Auth API."""
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError, jwt
+from supabase import Client
 
-from app.config import get_settings, Settings
+from app.database import get_supabase
 
 _bearer = HTTPBearer()
 
 
 def get_current_user_id(
     credentials: HTTPAuthorizationCredentials = Depends(_bearer),
-    settings: Settings = Depends(get_settings),
+    db: Client = Depends(get_supabase),
 ) -> str:
-    """Verify the Supabase-issued JWT and return the user's UUID (``sub`` claim)."""
+    """Call Supabase ``auth.get_user(token)`` and return the user's UUID."""
     token = credentials.credentials
     try:
-        payload = jwt.decode(
-            token,
-            settings.supabase_jwt_secret,
-            algorithms=["HS256"],
-            options={"verify_aud": False},
-        )
-    except JWTError:
+        user_response = db.auth.get_user(token)
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
         )
-    user_id: Optional[str] = payload.get("sub")
-    if not user_id:
+
+    if not user_response or not user_response.user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token missing subject claim",
+            detail="Invalid or expired token",
         )
-    return user_id
+
+    return user_response.user.id

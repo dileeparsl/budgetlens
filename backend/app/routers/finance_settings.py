@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
 
 from app.auth import get_current_user_id
-from app.database import get_supabase
+from app.database import get_supabase_for_user
 from app.models.finance_settings import FinanceSettingsOut, FinanceSettingsUpsert
 
 router = APIRouter(prefix="/api/finance-settings", tags=["finance-settings"])
@@ -15,7 +15,7 @@ TABLE = "finance_settings"
 @router.get("", response_model=FinanceSettingsOut)
 def get_finance_settings(
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     res = db.table(TABLE).select("*").eq("user_id", user_id).execute()
     if not res.data:
@@ -31,7 +31,7 @@ def get_finance_settings(
 def upsert_finance_settings(
     body: FinanceSettingsUpsert,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     existing = db.table(TABLE).select("id").eq("user_id", user_id).execute()
     payload = body.model_dump()

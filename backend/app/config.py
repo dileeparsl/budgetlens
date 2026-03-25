@@ -6,8 +6,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     supabase_url: str
-    supabase_service_role_key: str
-    supabase_jwt_secret: str
+    supabase_anon_key: str
     cors_origins: str = "http://localhost:3000"
 
     @property

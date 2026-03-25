@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from supabase import Client
 
 from app.auth import get_current_user_id
-from app.database import get_supabase
+from app.database import get_supabase_for_user
 from app.models.transaction import (
     TransactionCreate,
     TransactionListOut,
@@ -34,7 +34,7 @@ def _flatten(row: dict) -> dict:
 @router.get("", response_model=TransactionListOut)
 def list_transactions(
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
     type: Optional[str] = Query(None, pattern="^(income|expense)$"),
     category_id: Optional[str] = Query(None),
     date_from: Optional[date] = Query(None),
@@ -76,7 +76,7 @@ def list_transactions(
 def create_transaction(
     body: TransactionCreate,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     row = {"user_id": user_id, **body.model_dump()}
     row["date"] = row["date"].isoformat()
@@ -95,7 +95,7 @@ def create_transaction(
 def get_transaction(
     txn_id: str,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     res = (
         _select_with_category(db)
@@ -113,7 +113,7 @@ def update_transaction(
     txn_id: str,
     body: TransactionUpdate,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     updates = body.model_dump(exclude_none=True)
     if not updates:
@@ -137,7 +137,7 @@ def update_transaction(
 def delete_transaction(
     txn_id: str,
     user_id: str = Depends(get_current_user_id),
-    db: Client = Depends(get_supabase),
+    db: Client = Depends(get_supabase_for_user),
 ):
     res = (
         db.table(TABLE)
