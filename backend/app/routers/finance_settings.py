@@ -3,7 +3,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
 
-from app.deps import get_current_user_id, get_supabase
+from app.auth import get_current_user_id
+from app.database import get_supabase
 from app.models.finance_settings import FinanceSettingsOut, FinanceSettingsUpsert
 
 router = APIRouter(prefix="/api/finance-settings", tags=["finance-settings"])
