@@ -1,6 +1,6 @@
 # Architecture Decision Record
 
-## Use case
+## Use Case
 
 ### Brief
 
@@ -8,92 +8,120 @@
 
 Full brief: [docs/use-case.md](use-case.md).
 
-### MVP scope for 90 minutes
+### MVP Scope (90 minutes)
 
-- Auth (**Supabase Auth** — email/password is fastest).
-- **Categories** per user (defaults + custom).
-- **Transactions**: income/expense, amount, date, category, note.
+- Auth (**Supabase Auth** — email/password).
+- **Categories** per user (10 defaults auto-seeded + custom).
+- **Transactions**: income/expense, amount (integer cents), date, category, note.
 - **Settings**: monthly income, monthly budget, savings target.
 - **Landing (`/`)** — Month summary, budget % used, category breakdown.
-- **`/dashboard`** — Charts (e.g. Recharts): spending over time, category mix.
-- **Mobile-first** responsive layout.
+- **`/dashboard`** — Charts (Recharts): 6-month spending trends, category mix donut.
+- **Mobile-first** responsive dark theme.
 
-**Optional**: insight cards, NL query — only if deploy is not blocked.
-
-## System architecture (monorepo)
+## System Architecture (Monorepo)
 
 ```mermaid
 flowchart LR
   Browser["Browser"]
-  Next["Next.js\nfrontend/"]
-  API["FastAPI\nbackend/"]
+  Next["Next.js\nfrontend/\n(Vercel)"]
+  API["FastAPI\nbackend/\n(Vercel serverless)"]
   Supa["Supabase\nPostgres + Auth"]
-  Vercel["Vercel\n(frontend)"]
-  ApiHost["Railway / Render / Fly\n(backend)"]
   Browser <--> Next
   Browser <--> Supa
   Next --> API
   API <--> Supa
-  Next --- Vercel
-  API --- ApiHost
 ```
 
-- Next.js talks to **Supabase** for auth session in the browser.
-- Next.js calls **FastAPI** for domain REST operations (with Bearer token from Supabase where required).
-- FastAPI validates JWT and accesses Postgres via Supabase client or PostgREST (RLS aligned with `auth.uid()`).
+### Data Flow
 
-## Tech stack
+1. **Browser** signs up / logs in via **Supabase Auth** (hosted UI or client SDK) — gets a JWT session.
+2. **Next.js** sends `Authorization: Bearer <access_token>` to **FastAPI** for all domain operations.
+3. **FastAPI** verifies the JWT by calling `supabase.auth.get_user(token)` — no local JWT secret needed.
+4. For data queries, FastAPI creates a **per-request Supabase client** with `postgrest.auth(token)`, so PostgREST sees `auth.uid()` and **RLS policies** scope rows to the current user.
+
+## Deployed URLs
+
+| Surface | URL |
+| ------- | --- |
+| **Frontend** (Next.js) | [https://frontend-rho-ten-42.vercel.app](https://frontend-rho-ten-42.vercel.app) |
+| **Backend** (FastAPI API docs) | [https://budgetlens-api.vercel.app/docs](https://budgetlens-api.vercel.app/docs) |
+| **GitHub** | [https://github.com/dileeparsl/budgetlens](https://github.com/dileeparsl/budgetlens) |
+
+## Tech Stack
 
 | Layer | Choice | Reason |
 | ----- | ------ | ------ |
-| Frontend | Next.js + React in `frontend/` | SSR, fast UI iteration, Vercel-native |
-| Styling | Tailwind + shadcn/ui | Accessible UI, speed |
-| Backend | FastAPI in `backend/` | Clear REST + OpenAPI, Python ecosystem |
+| Frontend | Next.js 15 + React in `frontend/` | SSR, fast UI iteration, Vercel-native |
+| Styling | Tailwind CSS v4, Aperture tokens | Dark theme design system from Stitch |
+| Backend | FastAPI in `backend/` | Clear REST + OpenAPI, Python |
 | Database | Supabase Postgres | Free tier, auth, RLS |
-| Auth | Supabase Auth | JWT for API; session in Next.js |
-| Frontend hosting | Vercel | Git deploy, Next.js optimized |
-| API hosting | Railway / Render / Fly | ASGI-friendly, separate from Vercel |
-| UI/UX | Google Stitch + Figma | Exploration + handoff; **`docs/DESIGN.md`** (*Aperture Experience*) is the coded spec |
-| Charts | Recharts (in Next.js) | React-friendly |
+| Auth | Supabase Auth (anon key) | JWT for API; session in browser |
+| Hosting | Vercel (both packages) | Frontend: Next.js; Backend: serverless Python |
+| UI/UX | Google Stitch | *The Aperture Experience* — [`docs/DESIGN.md`](DESIGN.md) |
+| Charts | Recharts | React-friendly bar + donut charts |
 
-## Data model (conceptual)
+## Data Model
 
-Unchanged from Postgres perspective — see previous ERD: `profiles`, `categories`,
-`transactions`, `finance_settings`; money as **integer cents**; `type` on
-transactions: `income` | `expense`.
+Tables live in Supabase Postgres (schema: `backend/sql/schema.sql`).
 
-## API (FastAPI) — suggested
+| Table | Key columns | Notes |
+| ----- | ----------- | ----- |
+| `categories` | `id`, `user_id`, `name`, `icon`, `color`, `is_default` | 10 defaults auto-seeded per user |
+| `transactions` | `id`, `user_id`, `amount_cents`, `type`, `category_id`, `date`, `description` | `type` = `income` or `expense`; money as integer cents |
+| `finance_settings` | `id`, `user_id`, `monthly_income_cents`, `monthly_budget_cents`, `savings_target_cents` | One row per user, auto-created on first GET |
 
-Expose under a prefix e.g. `/api` or versioned paths; document at `/docs`.
+All tables have RLS: `auth.uid() = user_id`.
+
+## API (FastAPI)
+
+All routes under `/api/`. Interactive docs at `/docs`.
 
 | Method | Route | Purpose |
 | ------ | ----- | ------- |
-| GET, POST | /api/categories | List / create |
-| GET, PUT, DELETE | /api/categories/{id} | Read / update / delete |
-| GET, POST | /api/transactions | List / create |
-| GET, PUT, DELETE | /api/transactions/{id} | Read / update / delete |
-| GET, PUT | /api/finance-settings | Read / upsert |
+| GET | `/health` | Health check |
+| GET, POST | `/api/categories` | List (auto-seeds) / Create |
+| GET, PUT, DELETE | `/api/categories/{id}` | Read / Update / Delete |
+| GET, POST | `/api/transactions` | List (filter + paginate) / Create |
+| GET, PUT, DELETE | `/api/transactions/{id}` | Read / Update / Delete |
+| GET, PUT | `/api/finance-settings` | Read (auto-creates) / Upsert |
+| GET | `/api/summary/monthly` | Month totals, budget %, categories |
+| GET | `/api/summary/dashboard` | Current month + N-month trends |
 
-Use **Pydantic** on bodies; enforce user scope from JWT on every route.
+### Authentication Pattern
 
-## Next.js page routes (suggested)
+```
+auth.py: get_current_user_id()
+  → HTTPBearer extracts token
+  → supabase.auth.get_user(token) verifies with Supabase
+  → returns user.id (UUID)
+
+database.py: get_supabase_for_user()
+  → creates per-request Supabase client
+  → calls postgrest.auth(token) so RLS sees auth.uid()
+```
+
+No service-role key or local JWT secret needed.
+
+## Next.js Pages
 
 | Route | Purpose |
 | ----- | ------- |
-| / | Landing |
-| /login, /signup | Auth |
-| /dashboard | Charts |
-| /transactions | CRUD UI |
-| /categories | Manage categories |
-| /settings | Budget / income / savings targets |
+| `/login` | Sign in |
+| `/signup` | Create account |
+| `/` | Landing — month summary, budget bar, category breakdown |
+| `/dashboard` | Charts — 6-month trends + category donut |
+| `/transactions` | CRUD with filters |
+| `/settings` | Budget / income / savings targets |
 
 ## Security
 
-- **RLS** on all user tables; policies for `auth.uid()`.
-- **Service role** only on `backend/` server env — never in Next.js client bundle.
-- **CORS** on FastAPI: allow local dev + Vercel production origin only.
+- **RLS** on all user tables; policies enforce `auth.uid() = user_id`
+- **Anon key only** on both frontend and backend — no service-role key anywhere
+- **CORS** on FastAPI: allows local dev + Vercel production origin
+- **JWT forwarding** — user's own token used for all PostgREST queries
 
-## Contract between packages
+## Contract Between Packages
 
-- **Source of truth**: FastAPI OpenAPI (`/openapi.json`).
-- Mirror DTOs in `frontend` TypeScript types; update together when the API changes.
+- **Source of truth**: FastAPI OpenAPI (`/openapi.json`)
+- TypeScript types in `frontend/src/types/index.ts` mirror Pydantic models
+- Frontend sends `Authorization: Bearer <token>` with every API request
