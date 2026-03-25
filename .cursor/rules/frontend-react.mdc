@@ -1,0 +1,48 @@
+---
+description: Frontend React/Next.js conventions for rapid development (monorepo frontend/)
+globs: "frontend/**/*.{tsx,jsx,css}"
+alwaysApply: false
+---
+
+# Frontend Standards (`frontend/`)
+
+## Stack
+
+- Next.js 14+ with App Router (project root: `frontend/`)
+- Tailwind CSS; shadcn/ui; Lucide React
+- **Data**: REST calls to **FastAPI** at `NEXT_PUBLIC_API_URL` (Bearer token from Supabase session when endpoints are protected)
+- **Design**: [docs/DESIGN.md](mdc:docs/DESIGN.md) (*The Aperture Experience*, Google Stitch) is canonical; align **Figma** handoff to the same tokens. Use skill **`design-aperture`** and Figma MCP when connected
+
+## Component Patterns
+
+- Functional components with TypeScript
+- Use `"use client"` only when client interactivity is needed
+- Server Components by default for static/SSR; use server-side fetch to internal APIs if you add Next route handlers
+- Custom hooks in `frontend/src/hooks/` or `frontend/hooks/`
+
+## File Structure (typical)
+
+```text
+frontend/
+  src/
+    app/           # App Router pages
+    components/
+      ui/          # shadcn
+    hooks/
+    lib/           # API client, Supabase browser client, utils
+    types/         # TS types — mirror FastAPI/Pydantic contracts
+```
+
+## Styling
+
+- Tailwind utility-first; responsive mobile-first (`sm:`, `md:`, `lg:`)
+- **Dark-first:** the product spec is dark-primary (`docs/DESIGN.md`); map palette to CSS variables / `theme.extend`
+- **Typography:** Manrope (display/headlines), Inter (body/labels) per `docs/DESIGN.md`
+- **No-line rule:** avoid opaque 1px section borders; use surface tiers and tonal separation
+- Prefer Figma tokens only when they match `docs/DESIGN.md`
+
+## Performance
+
+- `next/image` for images
+- `dynamic()` for heavy client-only widgets
+- `loading.tsx` for Suspense boundaries

@@ -1,0 +1,16 @@
+{
+  "plugins": {
+    "vercel": {
+      "enabled": true
+    },
+    "clerk": {
+      "enabled": true
+    },
+    "supabase": {
+      "enabled": true
+    },
+    "postman": {
+      "enabled": true
+    }
+  }
+}

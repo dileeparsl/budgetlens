@@ -1,0 +1,37 @@
+---
+description: Testing and quality assurance rules for hackathon speed
+globs: "**/*.test.*,**/*.spec.*,**/__tests__/**,backend/**"
+alwaysApply: false
+---
+
+# Testing & Quality (Hackathon Mode)
+
+## Pragmatic Testing Strategy
+
+- Focus on critical path testing, not 100% coverage
+- Test user-facing flows end-to-end over unit tests
+- Use AI to generate tests after features are working
+
+## Minimum Testing
+
+- Smoke test: app loads without errors
+- Auth flow: login/logout works (Supabase + frontend)
+- CRUD: create and read transactions (and categories) via **FastAPI**
+- Landing/dashboard: month totals and at least one chart render with data
+- API: key FastAPI endpoints return expected responses (`/docs` try-it-out)
+
+## Quick Validation Commands
+
+```bash
+cd frontend && npm run build
+cd frontend && npm run lint
+cd frontend && npx tsc --noEmit
+cd backend && python -m compileall app 2>/dev/null || true
+```
+
+(Adjust Python paths if your package layout differs.)
+
+## Error Monitoring
+
+- React error boundary in `frontend/`
+- Log with prefixes: `[AUTH]`, `[DB]`, `[API]` (frontend console / backend logger)

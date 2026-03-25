@@ -1,0 +1,43 @@
+---
+description: Rules for documenting AI workflow during hackathon (judging criteria)
+globs: "**/docs/**,**/ai-workflow*,**/*.md"
+alwaysApply: false
+---
+
+# AI Workflow Documentation
+
+## Why This Matters
+
+AI usage coverage is a judging criterion. Document AI involvement across ALL stages.
+
+The hackathon product is a **personal finance tracker**; align examples with
+`docs/use-case.md` where helpful.
+
+## Documentation Template (docs/ai-workflow.md)
+
+Track each AI interaction with:
+
+1. **Stage**: Brainstorm / Design / Code / Debug / Test / Deploy
+2. **Tool Used**: Cursor, ChatGPT, Copilot, Google Stitch, Figma (+ MCP), etc.
+3. **Prompt/Action**: What you asked or did
+4. **Outcome**: What the AI produced
+5. **Time Saved**: Estimate vs manual effort
+
+## Stages to Document
+
+- Brainstorming: idea generation, architecture decisions
+- Design: UI/UX mockups, component design, wireframes
+- Coding: feature implementation, boilerplate generation
+- Debugging: error resolution, performance fixes
+- Testing: test generation, edge case discovery
+- Deployment: config generation, troubleshooting
+
+## Quick Log Format
+
+```markdown
+### [HH:MM] Stage - Brief Description
+- **Tool**: Tool name
+- **Prompt**: "actual prompt used"
+- **Result**: What was generated/fixed
+- **Notes**: Any observations
+```

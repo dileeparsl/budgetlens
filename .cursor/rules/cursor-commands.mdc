@@ -1,0 +1,48 @@
+---
+description: Custom Cursor workflow commands and shortcuts for hackathon speed
+alwaysApply: true
+---
+
+# Cursor Workflow Commands
+
+## Quick Commands (use in Cursor Chat/Agent)
+
+### /scaffold
+
+"Run the rapid-scaffold skill: create `frontend/` (Next.js) and `backend/` (FastAPI) per monorepo layout; follow root `.env.example`."
+
+### /deploy
+
+"Deploy using the deploy-free-hosting skill: Vercel for `frontend/` (Root Directory `frontend`); deploy `backend/` to Railway, Render, or Fly; set `NEXT_PUBLIC_API_URL` and CORS."
+
+### /fix
+
+"Run builds for both packages and fix errors: `cd frontend && npm run build`; `cd backend` and run tests or `python -m compileall` / your FastAPI check; fix issues one by one."
+
+### /test-flow
+
+"Open the browser and test: signup -> login -> add income/expense -> assign category -> confirm landing stats and dashboard charts -> edit/delete transaction -> logout (frontend + FastAPI + Supabase)."
+
+### /design
+
+"Follow docs/DESIGN.md and the design-aperture skill when implementing or refactoring UI in frontend/."
+
+### /document
+
+"Update docs/ai-workflow.md with all AI interactions from this session"
+
+### /status
+
+"Show project status: what's working, what's broken, what's left to build (frontend/, backend/, Supabase, deploys)."
+
+### /emergency
+
+"I have limited time left. Prioritize: minimum working demo — frontend on Vercel, API reachable, one CRUD path, auth working — defer polish."
+
+## Keyboard Shortcut Reminders
+
+- `Ctrl+K` - Quick AI edit in file
+- `Ctrl+L` - Open Chat panel
+- `Ctrl+I` - Inline AI suggestion
+- `Ctrl+Shift+I` - Open Agent mode (Composer)
+- `Tab` - Accept AI suggestion

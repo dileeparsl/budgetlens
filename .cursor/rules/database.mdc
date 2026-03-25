@@ -1,0 +1,40 @@
+---
+description: Database conventions for Supabase/Prisma/Drizzle
+globs: "**/*.sql,**/prisma/**,**/drizzle/**,**/db/**,**/migrations/**"
+alwaysApply: false
+---
+
+# Database Standards
+
+## Preferred Stack (pick one)
+
+1. **Supabase** (recommended) - Postgres + Auth + Realtime + Storage in one
+2. **Prisma + PlanetScale** - Type-safe ORM with serverless MySQL
+3. **Drizzle + Neon** - Lightweight ORM with serverless Postgres
+
+## Schema Design
+
+- Use UUIDs for primary keys (or auto-increment for simplicity)
+- Always include `created_at` and `updated_at` timestamps
+- Use foreign keys for referential integrity
+- Add indexes on frequently queried columns
+
+## Naming Conventions
+
+- Tables: `snake_case`, plural (e.g., `transactions`, `categories`)
+- Columns: `snake_case` (e.g., `created_at`, `user_id`)
+- Enums: `UPPER_SNAKE_CASE` values
+
+## Supabase Specific
+
+- Use Row Level Security (RLS) policies for auth
+- **Frontend**: `@supabase/supabase-js` / `@supabase/ssr` in `frontend/`
+- **Backend**: Supabase Python client or PostgREST with JWT — secrets in `backend/.env` only
+- Store Supabase URL and keys in env variables per package (see root `.env.example`)
+- Use realtime subscriptions for live features
+
+## Migration Pattern
+
+- Keep migrations small and reversible
+- Test migrations on a branch database first
+- Never modify existing migrations; create new ones

@@ -1,0 +1,31 @@
+---
+description: After scoped code or doc changes, commit with conventional message and push to origin
+alwaysApply: true
+---
+
+# Auto commit and push (agent)
+
+## When this applies
+
+Whenever you **finish a coherent set of edits** for a specific area (feature, fix, docs slice, rule change, config), you MUST:
+
+1. **Stage** only what belongs to that change — prefer explicit paths:
+   - `git add path/to/file1 path/to/file2`
+   - Use `git add -A` only if the working tree changes are **all** part of the same intentional change and nothing else is dirty; if the user has unrelated local edits, stage **only** files you touched.
+2. **Commit** using [COMMIT_MESSAGE_GUIDELINES.md](mdc:COMMIT_MESSAGE_GUIDELINES.md):
+   - Format: `type(scope): Short imperative summary` (optionally body for context).
+   - Examples: `docs(repo): Add community standards Cursor rules`, `fix(api): Correct CORS header`.
+3. **Push** to the remote on the **current branch**:
+   - `git push origin HEAD`
+   - If the branch has no upstream yet: `git push -u origin HEAD`
+4. If `git status` shows **nothing to commit** after staging, skip commit/push for that batch.
+
+## Safety and failures
+
+- **Never** stage or commit `.env`, `*.pem`, or other secrets listed in [.gitignore](mdc:.gitignore) / [SECURITY.md](mdc:SECURITY.md).
+- If push fails (auth, network, conflict): report the error, attempt a **single** reasonable fix (e.g. `git pull --rebase` then push if appropriate), then stop and tell the user what is left.
+- Do not commit **half-done** work unless the user asked for a WIP checkpoint; prefer one logical commit per completed slice.
+
+## Relation to community standards
+
+Commit messages and branching intent must stay consistent with [CONTRIBUTING.md](mdc:CONTRIBUTING.md) and [COMMIT_MESSAGE_GUIDELINES.md](mdc:COMMIT_MESSAGE_GUIDELINES.md).

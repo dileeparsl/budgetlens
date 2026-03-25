@@ -1,0 +1,35 @@
+---
+description: Git workflow rules for fast hackathon commits
+globs: "**/.git*,**/.husky/**"
+alwaysApply: false
+---
+
+# Git Workflow (Hackathon Speed)
+
+## Commit Strategy
+
+- Commit early and often (every 5-10 minutes)
+- Use conventional commit prefixes: `feat:`, `fix:`, `chore:`, `docs:`
+- Keep commits atomic; one feature/fix per commit
+- Don't squash; full history shows AI-assisted workflow
+
+## Branch Strategy
+
+- Work on `main` directly (hackathon speed)
+- Only branch if experimenting with risky changes
+
+## Commit Message Format
+
+```text
+feat: add transaction CRUD operations
+fix: resolve auth redirect loop
+chore: configure Supabase environment
+docs: update AI workflow documentation
+```
+
+## Quick Git Commands
+
+```bash
+git add -A && git commit -m "feat: description"
+git push origin main
+```

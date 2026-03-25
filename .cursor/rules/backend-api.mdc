@@ -1,0 +1,38 @@
+---
+description: Backend API conventions for FastAPI in backend/
+globs: "backend/**/*.py"
+alwaysApply: false
+---
+
+# Backend API Standards (`backend/`)
+
+Primary domain: **personal finance** — `docs/use-case.md`. Typical resources:
+`transactions`, `categories`, `finance_settings` (scoped to authenticated user).
+
+## API design
+
+- **FastAPI** routers; version or prefix e.g. `/api` if desired
+- JSON requests/responses; use **Pydantic** models for body/query/response
+- HTTP status codes: 200, 201, 400, 401, 403, 404, 422, 500
+- Expose **OpenAPI** at `/docs` and `/openapi.json` for frontend contract checks
+
+## Error handling
+
+- Use `HTTPException` or consistent error schema: `{"detail": "..."}` or `{"error": "...", "message": "..."}`
+- Log server errors with context; never leak secrets in responses
+
+## Validation
+
+- Pydantic v2 for all inputs; optional shared `schemas/` module
+- Never trust client input; validate UUIDs, enums, money in integer cents
+
+## Authentication
+
+- Validate **Supabase JWT** (Authorization: Bearer) on protected routes
+- Derive `user_id` from JWT claims; enforce row ownership consistent with RLS
+- Service role key: **server-only** in `backend/.env`; never ship to frontend
+
+## Database access
+
+- Prefer Supabase client with user-scoped client or PostgREST with RLS; or direct Postgres with care
+- Parameterized queries only; money as **integer cents** in the DB layer

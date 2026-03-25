@@ -1,0 +1,67 @@
+---
+description: RSL Mini-Hack '26 hackathon ground rules - speed, AI-first, 90-minute constraint
+alwaysApply: true
+---
+
+# RSL Mini-Hack '26 - Hackathon Ground Rules
+
+## Context
+
+- 90-minute time-boxed hackathon (March 25, 9:00-10:30 AM)
+- Build and deploy a working web application with data storage
+- Maximize AI-assisted development across ALL stages
+- Deliverables: working hosted app, GitHub repo, AI workflow docs
+
+## Official use case (March 25, 2026)
+
+**Personal finance tracking** (full text: `docs/use-case.md`, source PDF in repo
+root).
+
+Users track **income and expenses**, organize **categories**, see **summaries**
+(income, spend, balance; monthly budget/income/savings targets), use **auth**,
+**responsive** UI, **database** persistence, **CRUD** on transactions, a
+**landing** snapshot (month spend, % budget used, category breakdown), and a
+**dashboard** with **charts**. Optional: insights, savings tips, anomalies,
+natural-language Q&A.
+
+## Repo stack (BudgetLens monorepo)
+
+| Layer | Choice |
+| ----- | ------ |
+| Frontend | Next.js (in `frontend/`) |
+| Backend | FastAPI (in `backend/`) |
+| Database + Auth | Supabase |
+| Hosting | **Vercel** for Next.js; **separate** host for FastAPI (Railway/Render/Fly recommended) |
+| Remote | **GitHub** |
+| UI/UX | **Google Stitch** + **Figma**; spec in **`docs/DESIGN.md`** (*Aperture Experience*) |
+
+## Speed-First Principles
+
+- Prefer established libraries/frameworks over custom code
+- Use managed services (Supabase, Vercel, API host free tiers) over self-hosted
+- Ship MVP first, polish later - working > perfect
+- Avoid premature optimization; focus on core functionality
+- One-command deployments **per package**; env vars documented in `.env.example`
+
+## AI Usage Requirements (Judging Criteria)
+
+- Use AI for brainstorming, design, coding, debugging, testing, AND deployment
+- Document every AI interaction in `docs/ai-workflow.md`
+- Log prompts, tool steps, screenshots, and key decisions
+- Prioritize creative problem-solving over boilerplate
+
+## Technical Constraints
+
+- Must have user identification (login/auth)
+- Must have persistent data storage (database)
+- Must have CRUD operations
+- Must deploy to free hosting platform(s)
+- Must share source code on GitHub
+
+## When Generating Code
+
+- Always include error handling
+- **Frontend**: TypeScript; prefer React Server Components where helpful; client fetch to FastAPI when needed
+- **Backend**: Python type hints + Pydantic
+- Keep components and routers small, focused, and reusable
+- Use environment variables for all secrets/config

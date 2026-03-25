@@ -1,0 +1,48 @@
+---
+description: Multi-agent workflow orchestration rules for parallel development
+alwaysApply: true
+---
+
+# Multi-Agent Orchestration
+
+## Monorepo + deployments
+
+- **`frontend/`**: Next.js — deploy to **Vercel** (project **Root Directory** = `frontend`).
+- **`backend/`**: FastAPI — deploy separately (e.g. **Railway**, **Render**, **Fly.io**); not the same Vercel project unless intentionally using serverless Python.
+- **`docs/`**, **`.cursor/`**, **`scripts/`** live at repo root.
+- **Supabase**: single project for Postgres + Auth + RLS.
+- **Design**: [docs/DESIGN.md](mdc:docs/DESIGN.md) (*Aperture Experience*, from Stitch) + **Figma** (system/handoff); skills **`design-aperture`** (Cursor + Antigravity); use Stitch/Figma MCPs when connected.
+
+## When to Use Multi-Agent
+
+- Use `Task` tool to spawn parallel agents for independent work streams
+- **Backend** (`backend/`) + **Frontend** (`frontend/`) can be built in parallel after scaffold
+- Use `explore` subagent for codebase understanding
+- Use `shell` subagent for build/deploy operations
+- Use `generalPurpose` for complex multi-step implementations
+
+## Agent Coordination Patterns
+
+### Parallel Build Pattern
+
+Spawn two agents simultaneously:
+
+1. **Backend Agent**: FastAPI routes, Supabase access, Pydantic validation
+2. **Frontend Agent**: Next.js pages, components, API client to FastAPI
+
+### Sequential Pipeline Pattern
+
+1. Scaffold → Backend + Frontend (parallel) → Integration → **Dual deploy** → Document
+
+### Shared Contracts
+
+- Domain: **personal finance** (`docs/use-case.md`)
+- Agree REST paths + JSON shapes before parallel implementation (OpenAPI from FastAPI is the source of truth)
+- **Frontend**: TypeScript types in `frontend/src/types/` or `frontend/types/` (match API)
+- **Backend**: Pydantic models as validation source; optional Zod on frontend mirroring payloads
+
+## Conflict Resolution
+
+- If two agents modify the same file, the later agent reads first
+- Keep **mutations** in FastAPI; Next.js calls API with fetch/route handlers only as BFF if needed
+- Components in separate files; avoid mega-files shared by both agents

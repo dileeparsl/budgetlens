@@ -1,0 +1,49 @@
+---
+description: Deployment rules for monorepo — Vercel frontend + separate FastAPI host
+globs: "**/vercel.json,**/railway.*,**/render.yaml,**/fly.toml,**/Dockerfile,**/.env*,**/next.config.*,backend/**"
+alwaysApply: false
+---
+
+# Deployment Standards
+
+## Monorepo layout
+
+- **`frontend/`** → **Vercel** (set Git integration **Root Directory** to `frontend`, or run CLI from `frontend/`)
+- **`backend/`** → **Railway**, **Render**, or **Fly.io** (recommended for ASGI) — separate project from Vercel
+- Root `.env.example` documents variables for both packages
+
+## Pre-deploy checklist
+
+- [ ] `frontend`: `npm run build` passes
+- [ ] `backend`: app starts with production env (`uvicorn` or platform start command)
+- [ ] `NEXT_PUBLIC_API_URL` = public FastAPI base URL (no trailing slash)
+- [ ] `CORS_ORIGINS` includes Vercel production URL(s)
+- [ ] Supabase Auth: Site URL + redirect URLs include Vercel domain
+- [ ] Secrets only in host dashboards / `.env` (never committed)
+
+## Environment variables
+
+- `frontend/.env.local` — `NEXT_PUBLIC_*`, local dev
+- `backend/.env` — `SUPABASE_*`, `CORS_ORIGINS`, secrets
+- Commit **root** `.env.example` only; real values gitignored
+
+## Vercel (Next.js)
+
+```bash
+cd frontend
+npm i -g vercel
+vercel login
+vercel link
+vercel env add NEXT_PUBLIC_SUPABASE_URL
+vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
+vercel env add NEXT_PUBLIC_API_URL
+vercel --prod --yes
+```
+
+## Backend host (example: Railway)
+
+Use the platform’s UI or CLI; set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` or JWT verify vars, `CORS_ORIGINS`, and start command e.g. `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+
+## CORS
+
+FastAPI must allow the browser origin (`http://localhost:3000` and `https://*.vercel.app` or custom domain).

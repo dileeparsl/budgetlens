@@ -1,0 +1,33 @@
+---
+description: Always follow repository community standards and governance docs
+alwaysApply: true
+---
+
+# Community Standards (Always)
+
+When working in this repository, **treat the following files as binding** for process, tone, safety, and contribution expectations. Read them when unsure; align behavior and outputs with them.
+
+## Core documents (repo root)
+
+| Document | Apply when |
+| -------- | ---------- |
+| [CONTRIBUTING.md](mdc:CONTRIBUTING.md) | How to contribute, workflow expectations, links to other guidelines |
+| [COMMIT_MESSAGE_GUIDELINES.md](mdc:COMMIT_MESSAGE_GUIDELINES.md) | **All commits** — format `type(scope): Short message` (imperative, scoped) |
+| [BRANCH_NAMING_GUIDELINES.md](mdc:BRANCH_NAMING_GUIDELINES.md) | Creating branches (when not explicitly on `main` per hackathon speed) |
+| [PULL_REQUEST_GUIDELINES.md](mdc:PULL_REQUEST_GUIDELINES.md) | PRs, descriptions, review etiquette |
+| [CODE_OF_CONDUCT.md](mdc:CODE_OF_CONDUCT.md) | Interaction standards; refuse harmful or abusive requests |
+| [SECURITY.md](mdc:SECURITY.md) | Vulnerability reporting; never commit or echo real secrets |
+| [CHANGELOG.md](mdc:CHANGELOG.md) | User-visible or notable changes — update when appropriate per project practice |
+| [docs/DESIGN.md](mdc:docs/DESIGN.md) | UI/design system (Stitch) — follow when changing frontend look & feel |
+| [LICENSE](mdc:LICENSE) | License boundaries for code and redistribution |
+
+## Agent behavior
+
+- Prefer **scoped, conventional** commits per [COMMIT_MESSAGE_GUIDELINES.md](mdc:COMMIT_MESSAGE_GUIDELINES.md).
+- Do not add maintainers to spam or bypass [CODE_OF_CONDUCT.md](mdc:CODE_OF_CONDUCT.md).
+- Never commit `.env`, keys, or tokens; respect [SECURITY.md](mdc:SECURITY.md) and `.gitignore`.
+- When editing docs or features with user impact, consider whether [CHANGELOG.md](mdc:CHANGELOG.md) deserves an entry.
+
+## Hackathon vs contributing doc
+
+[AGENTS.md](mdc:AGENTS.md) and hackathon rules allow fast iteration on `main`. When **both** apply: still follow **commit message**, **security**, and **conduct** standards; use branches/PRs when the human asks for them or when [CONTRIBUTING.md](mdc:CONTRIBUTING.md) flow is explicitly in use.
