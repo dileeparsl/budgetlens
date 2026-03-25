@@ -44,7 +44,7 @@ export default function LoginPage() {
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-container-high">
             <Aperture className="h-8 w-8 text-primary" strokeWidth={1.75} aria-hidden />
           </div>
-          <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-on-surface">
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-on-surface">
             BudgetLens
           </h1>
           <p className="text-sm text-on-surface-variant">Sign in to your account</p>
