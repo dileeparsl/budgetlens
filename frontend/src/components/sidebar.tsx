@@ -31,7 +31,7 @@ export function Sidebar() {
         <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary">
           <Aperture className="h-6 w-6 text-on-primary" />
         </div>
-        <span className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight text-primary">
+        <span className="font-display text-xl font-bold tracking-tight text-primary">
           BudgetLens
         </span>
       </div>
