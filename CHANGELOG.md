@@ -11,7 +11,25 @@ Changes are organized into the following categories:
 
 ## [Unreleased]
 
-- (nothing yet)
+### Added
+
+- **Database**: Supabase tables (`categories`, `transactions`, `finance_settings`) with RLS policies, indexes, triggers — applied via Supabase MCP migration.
+- **Backend deployment**: FastAPI deployed to Vercel serverless Python (`vercel.json` + `api/index.py`). Live at [backend-chi-wine-55.vercel.app](https://backend-chi-wine-55.vercel.app).
+- **Frontend deployment**: Next.js deployed to Vercel. Live at [frontend-rho-ten-42.vercel.app](https://frontend-rho-ten-42.vercel.app).
+- **Screenshots**: 10 app screenshots in `docs/screenshots/` covering all pages and CRUD actions.
+- **End-to-end verification**: All API endpoints tested with real auth tokens; all pages verified via Browser MCP.
+
+### Changed
+
+- **Auth**: Refactored from service-role key + local JWT decode to anon key + `supabase.auth.get_user()` + per-request JWT forwarding for RLS. Simpler, no server secrets needed.
+- **Config**: `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_JWT_SECRET` replaced with single `SUPABASE_ANON_KEY`.
+- **Dependencies**: Removed `python-jose` (JWT decoding now handled by Supabase Auth API).
+- **README**: Added screenshot gallery, corrected backend API URL.
+- **Docs**: Updated `architecture.md`, `ai-workflow.md` with complete hackathon log.
+
+### Fixed
+
+- Frontend `NEXT_PUBLIC_API_URL` was pointing to wrong backend URL on Vercel — corrected and redeployed.
 
 ## [v0.1.0] - 2026-03-25
 

@@ -44,7 +44,7 @@ flowchart LR
 | Surface | URL |
 | ------- | --- |
 | **Frontend** (Next.js) | [https://frontend-rho-ten-42.vercel.app](https://frontend-rho-ten-42.vercel.app) |
-| **Backend** (FastAPI API docs) | [https://budgetlens-api.vercel.app/docs](https://budgetlens-api.vercel.app/docs) |
+| **Backend** (FastAPI API docs) | [https://backend-chi-wine-55.vercel.app/docs](https://backend-chi-wine-55.vercel.app/docs) |
 | **GitHub** | [https://github.com/dileeparsl/budgetlens](https://github.com/dileeparsl/budgetlens) |
 
 ## Tech Stack

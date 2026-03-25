@@ -81,23 +81,54 @@ See [docs/use-case.md](use-case.md) for the full official brief.
   - All routers updated from `get_supabase` → `get_supabase_for_user`
 - **Result**: Simpler, more secure auth — no server-side secrets needed beyond anon key
 
-### Phase 6: Deployment (55–70 min)
+### Phase 6: Supabase Database Setup (via MCP)
+
+- **Tool**: Cursor Agent + Supabase MCP
+- **Prompt**: "You can connect to the Supabase. I gave you access with MCP. Use it in the API."
+- **Result**:
+  - Connected to Supabase project (`qjpsvyzijsgqvzjpqxee`) via MCP
+  - Applied migration: created `categories`, `transactions`, `finance_settings` tables
+  - Set up RLS policies, indexes, triggers, and FK constraints
+  - Retrieved anon key via `get_publishable_keys` MCP tool
+  - Configured `backend/.env` and `frontend/.env.local` with real Supabase credentials
+- **Key decision**: Supabase MCP cannot expose service_role_key or JWT secret. Refactored backend to use anon key + `supabase.auth.get_user()` + per-request JWT forwarding — no secrets needed.
+- **Time saved**: ~15 min of dashboard clicking + manual schema writing
+
+### Phase 7: Deployment (55–70 min)
 
 - **Tool**: Cursor Agent + Vercel CLI
-- **Prompt**: "Deploy the frontend to Vercel"
+- **Prompts**: "Deploy the backend to Vercel", then user deployed frontend separately
 - **Result**:
-  - Frontend deployed to Vercel: [https://frontend-rho-ten-42.vercel.app](https://frontend-rho-ten-42.vercel.app)
-  - Env vars configured: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL`
-  - Backend has `vercel.json` + `api/index.py` ready for Vercel serverless deploy
-- **Debugging**: Fixed Vercel build error (missing env vars → added via `vercel env add`; Supabase client SSG error → lazy Proxy init)
+  - Backend deployed: [https://backend-chi-wine-55.vercel.app](https://backend-chi-wine-55.vercel.app) with `vercel.json` + `api/index.py` serverless entry
+  - Frontend deployed: [https://frontend-rho-ten-42.vercel.app](https://frontend-rho-ten-42.vercel.app)
+  - Env vars set via `vercel env add` on both projects
+  - CORS configured to allow cross-origin requests between frontend and backend
+- **Debugging**: Fixed wrong `NEXT_PUBLIC_API_URL` on frontend Vercel project (was `budgetlens-api.vercel.app`, corrected to `backend-chi-wine-55.vercel.app`)
 - **Time saved**: ~15 min of deployment config
 
-### Phase 7: Documentation (70–80 min)
+### Phase 8: End-to-End Testing (70–80 min)
 
-- **Tool**: Cursor Agent
-- **Prompt**: "Update the README. Include all deployed links. Update all docs, README on both backend and frontend."
-- **Result**: Updated root README, `backend/README.md`, created `frontend/README.md`, updated `docs/architecture.md`, `docs/ai-workflow.md`, `docs/hackathon-checklist.md`
-- **Time saved**: ~15 min
+- **Tool**: Cursor Agent + Browser MCP + Shell (API testing)
+- **Prompt**: "Debug the frontend and backend works or not on the deployed version"
+- **Result**:
+  - Signed in via Supabase Auth API (Shell) — got JWT, verified user
+  - Tested all 8 backend API endpoints with real auth token — all passing (200/201)
+  - Created test transactions (expense + income), updated finance settings
+  - Browser MCP: navigated all 6 pages, verified data loads, no CORS errors
+  - Identified and fixed frontend API URL misconfiguration
+- **Time saved**: ~20 min of manual API testing + browser inspection
+
+### Phase 9: Screenshots & Documentation (80–90 min)
+
+- **Tool**: Cursor Agent + Browser MCP
+- **Prompt**: "Perform all actions, take screenshots, add them to the repo. Update the README and docs."
+- **Result**:
+  - 10 screenshots captured via Browser MCP: login, signup, home, transactions, dashboard, settings, add/edit transaction modals
+  - Saved to `docs/screenshots/` in the repo
+  - Full CRUD verified: create transaction, edit transaction, view all pages
+  - README updated with screenshot gallery, corrected URLs
+  - All docs updated: `architecture.md`, `ai-workflow.md`, `CHANGELOG.md`
+- **Time saved**: ~15 min of manual screenshot capture + documentation
 
 ---
 
@@ -105,15 +136,17 @@ See [docs/use-case.md](use-case.md) for the full official brief.
 
 | Metric | Value |
 | ------ | ----- |
-| Total AI interactions | ~20+ major prompts/actions |
-| Tools used | Cursor Agent, Multi-Agent, Google Stitch, Supabase MCP, Vercel CLI, Browser MCP |
+| Total AI interactions | ~30+ major prompts/actions |
+| Tools used | Cursor Agent, Multi-Agent, Google Stitch, Supabase MCP, Vercel CLI, Browser MCP, Figma MCP |
 | Stages covered | Brainstorm, Design, Code, Debug, Test, Deploy, Document |
-| Estimated time saved | ~170 min (compressed into ~80 min of actual work) |
+| Estimated time saved | ~200 min (compressed into ~90 min of actual work) |
 
 ## Key Insights
 
+- **Supabase MCP** enabled zero-dashboard database setup — tables, RLS, indexes, and keys all configured from the IDE
 - **Multi-agent parallelism** was highly effective for frontend pages — 6 pages built concurrently by sub-agents
 - **Google Stitch** provided a production-quality design system in minutes that would take hours to design manually
-- **Iterative debugging** with AI (module shadowing, type hint compatibility, SSG client init) was faster than manual debugging but still required understanding the root cause
-- **Auth refactor** (service-role → anon key + RLS passthrough) was a critical security improvement that the AI flagged but the user drove
-- **Vercel serverless Python** for the backend simplified deployment to a single platform
+- **Browser MCP** automated end-to-end testing and screenshot capture — caught the wrong API URL before manual testing would have
+- **Auth refactor** (service-role → anon key + RLS passthrough) was driven by MCP limitations but resulted in a simpler, more secure architecture
+- **Vercel serverless Python** for the backend simplified deployment to a single platform — both packages on Vercel
+- **Iterative debugging** with AI (module shadowing, type hint compatibility, SSG client init, CORS, wrong env vars) was faster than manual debugging but still required understanding the root cause

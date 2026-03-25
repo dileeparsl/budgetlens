@@ -9,8 +9,22 @@
 | Surface | URL |
 | ------- | --- |
 | **Web app** | [https://frontend-rho-ten-42.vercel.app](https://frontend-rho-ten-42.vercel.app) |
-| **API docs** | [https://budgetlens-api.vercel.app/docs](https://budgetlens-api.vercel.app/docs) |
+| **API docs** | [https://backend-chi-wine-55.vercel.app/docs](https://backend-chi-wine-55.vercel.app/docs) |
 | **GitHub** | [https://github.com/dileeparsl/budgetlens](https://github.com/dileeparsl/budgetlens) |
+
+## Screenshots
+
+| Login | Home |
+|:---:|:---:|
+| ![Login](docs/screenshots/01-login.png) | ![Home](docs/screenshots/03-home.png) |
+
+| Transactions | Dashboard |
+|:---:|:---:|
+| ![Transactions](docs/screenshots/04-transactions.png) | ![Dashboard](docs/screenshots/05-dashboard.png) |
+
+| Settings | Add Transaction |
+|:---:|:---:|
+| ![Settings](docs/screenshots/06-settings.png) | ![Add Transaction](docs/screenshots/07-add-transaction.png) |
 
 ## Features
 
@@ -22,7 +36,7 @@
 - **Dashboard** — Recharts bar chart (6-month trends) + donut chart (category mix)
 - **Settings** — update financial targets; view profile
 - **RLS** — Supabase Row Level Security ensures users only see their own data
-- **Responsive** — mobile-friendly dark theme UI
+- **Responsive** — mobile-friendly dark theme UI (*The Aperture Experience*)
 
 ## Tech Stack
 
